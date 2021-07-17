@@ -1,14 +1,14 @@
 package ch.bbw._project_mvn_openjfx;
 
-public enum EyeColor {
+public enum Rental {
 	
 	GREEN("Green"), BLUE("Blue"), BROWN("Brown"), AZURE("Azure");
 
-	public static final EyeColor[] ALL = { GREEN, BLUE, BROWN, AZURE };
+	public static final Rental[] ALL = { GREEN, BLUE, BROWN, AZURE };
 
 	private final String name;
 
-	private EyeColor(final String name) {
+	private Rental(final String name) {
 		this.name = name;
 	}
 
