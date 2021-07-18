@@ -1,127 +1,137 @@
 package ch.bbw._project_mvn_openjfx;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class PrimaryController {
 
-	@FXML
-	private TextField txtName;
-	@FXML
-	private TextField txtVorname;
-	@FXML
-	private TextField txtEmail;
+    @FXML
+    private TextField txtName;
+    @FXML
+    private TextField txtVorname;
+    @FXML
+    private TextField txtEmail;
+    @FXML
+    private DatePicker geburtsdatum;
+    @FXML
+    private Slider groesse;
+    @FXML
+    private TextField gewicht;
+    @FXML
+    private TextField strasse;
+    @FXML
+    private TextField plz;
+    @FXML
+    private TextField ort;
+    @FXML
+    private TextField telefonnr;
+    @FXML
+    private Slider schuheGroesse;
+    @FXML
+    private ChoiceBox<String> fahrstil;
+    @FXML
+    private DatePicker ausleihdatum;
+    @FXML
+    private DatePicker zurueckam;
+    @FXML
+    private ToggleGroup level;
+    @FXML
+    private ToggleGroup miete;
+    @FXML
+    private ToggleGroup geschlecht;
 
-	/**
-	 * Fields
-	 *
-	 */
-	// Customer Array
-	private Customer[] customerArray = new Customer[10];
+    /**
+     * Fields
+     */
+    // Customer List
+    private ObservableList<Customer> customers = FXCollections.observableArrayList();
 
-	// oder Liste
-//	private ObservableList<Customer> customers = FXCollections.observableArrayList();
+    private final ObservableList<String> fahrstilList = FXCollections.observableArrayList(
+            "Tiefschnee", "Freestyle", "All-Mountain","Touren");
 
-	private int actualCustomer;
+    /**
+     * some customers
+     * <p>
+     * mit Liste
+     *
+     * @return
+     */
+    private ObservableList<Customer> getCustomers() {
+        ObservableList<Customer> customers = FXCollections.observableArrayList(
+                //	new Customer("Giovanni", "Cucuzza", "gc@bbw.ch","055 555 55 55",,,,,,,, );
+        );
+        return customers;
 
-	/**
-	 * some customers
-	 * 
-	 * mit Liste
-	 * 
-	 * @return
-	 */
-//	private ObservableList<Customer> getCustomers() {
-//		ObservableList<Customer> customers = FXCollections.observableArrayList(
-//				new Customer("Giovanni", "Cucuzza", "gc@bbw.ch"), new Customer("Jimmi", "Hendrix", "jh@bbw.ch"),
-//				new Customer("Johnny", "Django", "jd@bbw.ch"));
-//		return customers;
-//
-//	}
+    }
 
-	// Beispiel mit Arrays
-	private Customer[] getCustomerArray() {
+    /**
+     * initialisierungsmethode von FXML
+     */
+    @FXML
+    private void initialize() {
+        // set data
+        fahrstil.setItems(fahrstilList);
+    }
 
-		Customer[] customers = new Customer[10];
-		for (int i = 0; i < 10; i++) {
-			customers[i] = new Customer("Johnny" + i, "Hendrix" + i, "jh@bbw.ch");
-		}
-		return customers;
+    @FXML
+    public void onButtonSave() {
+        System.out.println("button klicked");
 
-	}
 
-	/**
-	 * initialisierungsmethode von FXML
-	 */
-	@FXML
-	private void initialize() {
-		// set datas
+        if(!validateIsNumPlz()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ungültige Postleitzahl");
+            alert.setHeaderText("Ungültige Postleitzahl");
+            alert.setContentText("Ihre/n Email Postleitzahl ist nicht gültig. Bitte geben \n Sie eine gültige PLZ ein!");
 
-		this.actualCustomer = 0;
-		// mit Arrays
-		this.customerArray = getCustomerArray();
-		txtName.setText(customerArray[actualCustomer].getFirstname());
+            alert.showAndWait();
+        }  else if (!validateIsNumGewicht()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ungültiger Gewicht");
+            alert.setHeaderText("Ungültige Gewicht");
+            alert.setContentText("Bitte geben Sie einen Zahl ein!");
 
-		// mit Liste
-//		this.customers = getCustomers();
-//		txtName.setText(customers.get(actualCustomer).getFirstname());
+            alert.showAndWait();
+        } else {
+            Customer customer = new Customer();
 
-	}
+            customer.setLastname(txtName.getText());
+            customer.setFirstname(txtVorname.getText());
+            customer.setEmail(txtEmail.getText());
+            customer.setTelephone(telefonnr.getText());
+            customer.setAddress(strasse.getText());
+            customer.setPlz(Integer.parseInt(plz.getText()));
+            customer.setLocation(ort.getText());
+            customer.setRentalType(miete.getSelectedToggle().toString());
+            customer.setLevel(level.getSelectedToggle().toString());
+            customer.setGender(geschlecht.getSelectedToggle().toString());
+            customer.setBirthdate(geburtsdatum.getValue());
+            customer.setHeight(groesse.getValue());
+            customer.setWeight(Double.parseDouble(gewicht.getText()));
+            customer.setShoeSize((int) schuheGroesse.getValue());
+            customer.setStyle(fahrstil.getValue());
+            customer.setRentedOut(ausleihdatum.getValue());
+            customer.setReturnedOn(zurueckam.getValue());
 
-	@FXML
-	public void onButtonSave() {
-		System.out.println("button klicked");
-		System.out.println("Name: " + txtName.getText());
-		// Liste
-//		System.out.println(customers.get(actualCustomer));
-		// Arrays
-		System.out.println(customerArray[actualCustomer]);
+            customers.add(customer);
+        }
 
-	}
+        for (Customer customer1 : customers) {
+            System.out.println(customer1.toString());
+        }
+    }
 
-	@FXML
-	public void onButtonForward() {
-		actualCustomer++;
-		// roundrobin
-		if (actualCustomer > customerArray.length - 1) {
-			actualCustomer = 0;
-		}
-		// Liste
-//		txtName.setText(customers.get(actualCustomer).getFirstname());
-		// Arrays
-		txtName.setText(customerArray[actualCustomer].getFirstname());
-		txtVorname.setText(customerArray[actualCustomer].getLastname());
-		txtEmail.setText(customerArray[actualCustomer].getEmail());
+    private boolean validateIsNumPlz() {
+        String regex = "^[0-9]+([,.][0-9]+)?$";
+        return plz.getText().matches(regex);
+    }
 
-	}
+    private boolean validateIsNumGewicht() {
+        String regex = "^[0-9]+([,.][0-9]+)?$";
+        return gewicht.getText().matches(regex);
+    }
 
-	@FXML
-	public void onButtonFastForward() {
-		actualCustomer = (customerArray.length - 1);
-		// Liste
-//		txtName.setText(customers.get(actualCustomer).getFirstname());
-		// Array
-		txtName.setText(customerArray[actualCustomer].getFirstname());
-
-	}
-
-	@FXML
-	public void onButtonBack() {
-		System.out.println("button klicked");
-
-	}
-
-	@FXML
-	public void onButtonFastBack() {
-		System.out.println("button klicked");
-
-	}
 
 }
